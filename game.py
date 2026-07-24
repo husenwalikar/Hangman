@@ -24,10 +24,7 @@ class Hangman:
             self.is_lost()
             self.is_won()
             print("Wrong guess")
-
-        
-
-        
+                   
     def return_word(letter):
         pass
 
