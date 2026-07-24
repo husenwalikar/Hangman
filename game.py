@@ -1,5 +1,3 @@
-
-
 class Hangman:
     def __init__(self, target_word: str, max_attempt: int):
         self.target_word = target_word
@@ -10,26 +8,33 @@ class Hangman:
     def guess(self, letter: str):
         if not(len(letter) == 1):
             print("Length cannot be One")
+
         elif not(letter.islower()):
             print("Must be lower")
+
         elif letter in self.letter_guessed:
              print("Letter already guessed")
+
         elif letter not in self.letter_guessed and letter in self.target_word:
-            self.attempt_remain -= 1
+            self.letter_guessed.add(letter)
             self.is_lost()
             self.is_won()
             self.return_word(letter)
+
         else:
             self.attempt_remain -= 1
+            self.letter_guessed.add(letter)
             self.is_lost()
             self.is_won()
             print("Wrong guess")
-                   
+
     def return_word(letter):
         pass
 
-    def is_won():
-        pass
+    def is_won(self):
+        target_word_set= set(self.target_word)
+        return target_word_set.issubset(self.letter_guessed)
 
-    def is_lost():
-        pass
+
+    def is_lost(self) -> bool:
+        return self.attempt_remain == 0
