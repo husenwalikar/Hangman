@@ -23,10 +23,7 @@ categories: dict[str, list[str]] = {
     ],
 }
 
-# def select_word(category: str) -> str:
+
 def select_word(category: str) -> str:
     category_list = categories[category]
     return random.choice(category_list)
-
-# word = select_word("movies")
-# print(word)

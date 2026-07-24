@@ -1,25 +1,40 @@
-import random
-print("H A N G M A N")
-word_list = ['python', 'java', 'swift', 'javascript']
-word_choosen = random.choice(word_list)
-print(word_choosen)
-for i in word_list:
-    print(f"'{i}'", end=", ")
-n = 8
-letter_choosen = []
-for i in range(n):
-    letter = input(f"Input a letter: ")
-    letter_choosen += letter
-    if letter_choosen[i] in word_choosen:
-        for i in range(len(word_choosen)):
-            if letter_choosen[i] == word_choosen[i]:
-                print(word_choosen[i], end="")
-                continue
+from game import Hangman
+from words import categories, select_word
+
+wins, losses = 0, 0
+while True:
+    user_input = input('''Type "play" to play the game, "results" to show the scoreboard, and "exit" to quit: ''')
+    if user_input == "play":
+        category = input(f"Select category out of {", ".join(categories.keys())}: ")
+        word_selected = select_word(category)
+        hangman = Hangman(word_selected, 6)
+        while not(hangman.is_won() or hangman.is_lost()):
+            rendered_gallow = hangman.render_gallows()
+            rendered_word = hangman.render_word()
+            print(rendered_gallow)
+            print(rendered_word)
+
+            entered_letter = input("Enter a letter to guess or '?' for a hint: ")
+            if entered_letter == '?':
+                hangman.use_hint()
+
             else:
-                print("-", end="")
+                hangman.guess(entered_letter)
 
-    else:
-        continue
+        if hangman.is_won():
+            print("You Won")
+            wins += 1
 
-else:
-    print("Thanks for playing!")
+        else:
+            print("You Lost")
+            losses += 1 
+
+        rendered_gallow = hangman.render_gallows()
+        print(rendered_gallow)
+        print(word_selected)
+
+
+    elif user_input == "results":
+        print(f"Wins: {wins} Losses: {losses}")
+    elif user_input == "exit":
+        break

@@ -1,5 +1,7 @@
 import random
 
+from ui import gallows
+
 
 class Hangman:
     def __init__(self, target_word: str, max_attempt: int):
@@ -20,15 +22,10 @@ class Hangman:
 
         elif letter not in self.letter_guessed and letter in self.target_word:
             self.letter_guessed.add(letter)
-            self.is_lost()
-            self.is_won()
-            self.render_word()
 
         else:
             self.attempt_remain -= 1
             self.letter_guessed.add(letter)
-            self.is_lost()
-            self.is_won()
             print("Wrong guess")
 
     def render_word(self):
@@ -55,4 +52,6 @@ class Hangman:
         target_word_set = set(self.target_word)
         hint_letter: str = random.choice(list(target_word_set.difference(self.letter_guessed)))
         self.letter_guessed.add(hint_letter)
-        return self.render_word()
+
+    def render_gallows(self):
+        return gallows[self.max_attempt - self.attempt_remain]
