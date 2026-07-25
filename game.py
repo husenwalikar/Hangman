@@ -12,7 +12,7 @@ class Hangman:
 
     def guess(self, letter: str):
         if len(letter) != 1:
-            print("Length cannot be One")
+            print("Length cannot be more then One")
 
         elif not(letter.islower()):
             print("Must be lower")
@@ -48,10 +48,13 @@ class Hangman:
         return self.attempt_remain == 0
 
     def use_hint(self):
-        self.attempt_remain -= 1
-        target_word_set = set(self.target_word)
-        hint_letter: str = random.choice(list(target_word_set.difference(self.letter_guessed)))
-        self.letter_guessed.add(hint_letter)
+        if self.max_attempt <= 4:
+            print("hints are unavailable at this difficulty.")
+        else:
+            self.attempt_remain -= 1
+            target_word_set = set(self.target_word)
+            hint_letter: str = random.choice(list(target_word_set.difference(self.letter_guessed)))
+            self.letter_guessed.add(hint_letter)
 
     def render_gallows(self):
         return gallows[self.max_attempt - self.attempt_remain]
