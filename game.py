@@ -49,7 +49,7 @@ class Hangman:
         return self.attempt_remain == 0
 
     def use_hint(self):
-        if self.max_attempt <= 4:
+        if self.max_attempt == 5:
             print("hints are unavailable at this difficulty.")
         else:
             self.attempt_remain -= 1
@@ -59,5 +59,5 @@ class Hangman:
 
     def render_gallows(self):
         mistakes_made = self.max_attempt - self.attempt_remain
-        index = int(mistakes_made / self.max_attempt) * 10
+        index = int(mistakes_made / self.max_attempt * 10)
         return gallows[index]

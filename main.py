@@ -1,11 +1,14 @@
 import argparse
 
 from game import Hangman
+from stats import load_stats, save_stats
 from words import categories, select_word
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--category", help="Selecting a category")
-parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the diificulty")
+parser = argparse.ArgumentParser(description="Play Hangman")
+parser.add_argument("-c", "--category", help="Selecting a category", default="space")
+parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the diificulty", default="medium")
+args = parser.parse_args()
+
 def select_category():
     while True:   
         category = input(f"Select category out of {", ".join(categories.keys())}: ")
@@ -25,44 +28,62 @@ def select_level():
             return 5
         print("Invalid difficulty")
 
-    
-wins, losses = 0, 0
-while True:
-    user_input = input('''Type "play" to play the game, "results" to show the scoreboard, and "exit" to quit: ''')
-    if user_input == "play":
-        category = select_category()
-        level = select_level()
-        word_selected = select_word(category)
-        hangman = Hangman(word_selected, level)
-        while not(hangman.is_won() or hangman.is_lost()):
-            rendered_gallow = hangman.render_gallows()
-            rendered_word = hangman.render_word()
-            print(rendered_gallow)
-            print(rendered_word)
-
-            entered_letter = input("Enter a letter to guess or '?' for a hint: ")
-            if entered_letter == '?':
-                hangman.use_hint()
-
-            else:
-                hangman.guess(entered_letter)
-
+def play_round(category, level):
+    word_selected = select_word(category)
+    hangman = Hangman(word_selected, level)
+    while not(hangman.is_won() or hangman.is_lost()):
         rendered_gallow = hangman.render_gallows()
+        rendered_word = hangman.render_word()
         print(rendered_gallow)
-        print(word_selected)
+        print(rendered_word)
 
-        if hangman.is_won():
-            print("You Won")
-            wins += 1
+        entered_letter = input("Enter a letter to guess or '?' for a hint: ")
+        if entered_letter == '?':
+            hangman.use_hint()
 
         else:
-            print("You Lost")
-            losses += 1 
+            hangman.guess(entered_letter)
 
-    elif user_input == "results":
-        print(f"Wins: {wins} Losses: {losses}")
-    elif user_input == "exit":
-        break
-    else:
-        print("Invalid input!")
-        continue
+    rendered_gallow = hangman.render_gallows()
+    print(rendered_gallow)
+    print(word_selected)
+
+    return bool(hangman.is_won())
+
+if args.category and args.difficulty:
+    difficulty_dict = {"easy": 10, "medium": 8, "hard": 5}
+    level = difficulty_dict[args.difficulty]
+    category = args.category
+    play_round(category, level)
+
+else:
+    stats = load_stats()
+    wins, losses = stats["wins"], stats["losses"]
+    try:
+        while True:
+            user_input = input('''Type "play" to play the game, "results" to show the scoreboard, and "exit" to quit: ''')
+            if user_input == "play":
+                category = select_category()
+                level = select_level()
+                round_result = play_round(category, level)
+                if round_result:
+                    wins += 1
+                    print("You Won")
+                else:
+                    losses += 1
+                    print("You Lost")
+                save_stats(wins, losses)
+
+            elif user_input == "results":
+                print(f"Wins: {wins} Losses: {losses}")
+
+            elif user_input == "exit":
+                save_stats(wins, losses)
+                break
+
+            else:
+                print("Invalid input!")
+                continue
+    except KeyboardInterrupt:
+        save_stats(wins, losses)
+        print("\nThanks for playing! Goodbye.")
