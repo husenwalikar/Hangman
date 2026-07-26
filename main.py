@@ -5,8 +5,8 @@ from stats import load_stats, save_stats
 from words import categories, select_word
 
 parser = argparse.ArgumentParser(description="Play Hangman")
-parser.add_argument("-c", "--category", help="Selecting a category", default="space")
-parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the diificulty", default="medium")
+parser.add_argument("-c", "--category", help="Selecting a category")
+parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the diificulty")
 args = parser.parse_args()
 
 def select_category():
@@ -28,7 +28,7 @@ def select_level():
             return 5
         print("Invalid difficulty")
 
-def play_round(category, level):
+def play_round(category: str, level: int):
     word_selected = select_word(category)
     hangman = Hangman(word_selected, level)
     while not(hangman.is_won() or hangman.is_lost()):
@@ -50,11 +50,24 @@ def play_round(category, level):
 
     return bool(hangman.is_won())
 
+stats = load_stats()
+wins, losses = stats["wins"], stats["losses"]
+def update_results(round_result):
+    global wins, losses
+    if round_result:
+        wins += 1
+        print("You Won")
+    else:
+        losses += 1
+        print("You Lost")
+    save_stats(wins, losses)
+
 if args.category and args.difficulty:
     difficulty_dict = {"easy": 10, "medium": 8, "hard": 5}
     level = difficulty_dict[args.difficulty]
     category = args.category
-    play_round(category, level)
+    round_result = play_round(category, level)
+    update_results(round_result)
 
 else:
     stats = load_stats()
@@ -66,13 +79,7 @@ else:
                 category = select_category()
                 level = select_level()
                 round_result = play_round(category, level)
-                if round_result:
-                    wins += 1
-                    print("You Won")
-                else:
-                    losses += 1
-                    print("You Lost")
-                save_stats(wins, losses)
+                update_results(round_result)
 
             elif user_input == "results":
                 print(f"Wins: {wins} Losses: {losses}")
