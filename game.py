@@ -11,21 +11,22 @@ class Hangman:
         self.attempt_remain = max_attempt
 
     def guess(self, letter: str):
+        # Graud Clauses
         if len(letter) != 1:
             print("Length cannot be more then One")
+            return
 
-        elif not(letter.islower()):
+        elif not(letter.isalpha()) or not(letter.islower()):
             print("Must be lower")
+            return
 
         elif letter in self.letter_guessed:
              print("Letter already guessed")
+             return
 
-        elif letter not in self.letter_guessed and letter in self.target_word:
-            self.letter_guessed.add(letter)
-
-        else:
+        self.letter_guessed.add(letter)
+        if letter not in self.target_word:
             self.attempt_remain -= 1
-            self.letter_guessed.add(letter)
             print("Wrong guess")
 
     def render_word(self):
@@ -57,4 +58,6 @@ class Hangman:
             self.letter_guessed.add(hint_letter)
 
     def render_gallows(self):
-        return gallows[self.max_attempt - self.attempt_remain]
+        mistakes_made = self.max_attempt - self.attempt_remain
+        index = int(mistakes_made / self.max_attempt) * 10
+        return gallows[index]

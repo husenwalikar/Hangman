@@ -1,7 +1,11 @@
+import argparse
+
 from game import Hangman
 from words import categories, select_word
 
-
+parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--category", help="Selecting a category")
+parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the diificulty")
 def select_category():
     while True:   
         category = input(f"Select category out of {", ".join(categories.keys())}: ")
@@ -12,13 +16,13 @@ def select_category():
 
 def select_level():
     while True:
-        level = input("Select the diificulty type 'easy', 'medium' or 'hard': ")
+        level = input("Select the diificulty, type 'easy', 'medium' or 'hard': ")
         if level == 'easy':
-            return 6
+            return 10
         elif level == 'medium':
-            return 5
+            return 8
         elif level == 'hard':
-            return 4
+            return 5
         print("Invalid difficulty")
 
     
