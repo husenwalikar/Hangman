@@ -13,21 +13,18 @@ class Hangman:
     def guess(self, letter: str):
         # Graud Clauses
         if len(letter) != 1:
-            print("Length cannot be more then One")
-            return
+            return "invalid_length"
 
         elif not(letter.isalpha()) or not(letter.islower()):
-            print("Must be lower")
-            return
+            return "invalid_letter"
 
         elif letter in self.letter_guessed:
-             print("Letter already guessed")
-             return
+             return "already_guessed"
 
         self.letter_guessed.add(letter)
         if letter not in self.target_word:
             self.attempt_remain -= 1
-            print("Wrong guess")
+            return "invalid_guess"
 
     def render_word(self):
         # rendered_word: str = "".join([i if i in self.letter_guessed else "_" for i in self.target_word])
@@ -50,7 +47,7 @@ class Hangman:
 
     def use_hint(self):
         if self.max_attempt == 5:
-            print("hints are unavailable at this difficulty.")
+            return "hints_unavailable"
         else:
             self.attempt_remain -= 1
             target_word_set = set(self.target_word)
