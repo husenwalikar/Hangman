@@ -1,4 +1,17 @@
-gallows: list[str] = [
+from rich.align import Align
+from rich.columns import Columns
+from rich.console import Console, Group
+from rich.panel import Panel
+from rich.theme import Theme
+
+console = Console()
+# custom_theme = Theme({
+#     "good" : "green",
+#     "bad": "bold red"
+# })
+# console.print("File corrupted!", style="bad")
+# console.print("The internet is [bad]down![/bad]")
+gallow_stages: list[str] = [
     # Stage 0: Empty Gallows (0 mistakes)
     r"""   +-----------+            
    |/                       
@@ -197,3 +210,23 @@ gallows: list[str] = [
    |      (__/   \__)       
    ========================="""
 ]
+
+def display_board(hangman_art: str, current_word: str, attempts: int, guessed_letters: set):
+    
+    styled_hangman = f"[bold yellow]{hangman_art}[/]"
+    left_panel = Panel(styled_hangman, title="Gallows")
+
+    styled_word = f"[bold cyan]{' '.join(current_word)}[/]"
+    styled_attempts = f"[bold red]Lives: {attempts}[/]"
+    styled_guesses = f"Guessed: {', '.join(guessed_letters)}"
+    right_stack = Group(
+        styled_word,
+        "",
+        styled_attempts,
+        styled_guesses
+    )
+    right_panel = Panel(right_stack, title="Status")
+
+    dashboard = Columns([left_panel, right_panel])
+    master_panel = Panel(dashboard, title="HANGMAN", border_style="bold magenta")
+    console.print(master_panel)

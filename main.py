@@ -2,9 +2,10 @@ import argparse
 
 from game import Hangman
 from stats import load_stats, save_stats
+from ui import display_board
 from words import categories, select_word
 
-parser = argparse.ArgumentParser(description="Play Hangman")
+parser = argparse.ArgumentParser(description="Hangman Quick Round")
 parser.add_argument("-c", "--category", help="Selecting a category")
 parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the diificulty")
 args = parser.parse_args()
@@ -32,20 +33,33 @@ def play_round(category: str, level: int):
     word_selected = select_word(category)
     hangman = Hangman(word_selected, level)
     while not(hangman.is_won() or hangman.is_lost()):
-        rendered_gallow = hangman.render_gallows()
-        rendered_word = hangman.render_word()
-        print(rendered_gallow)
-        print(rendered_word)
+        display_board(  hangman.render_gallows(),
+                        hangman.render_word(),
+                        hangman.attempt_remain,
+                        hangman.letter_guessed  )
+        
         entered_letter = input("Enter a letter to guess or '?' for a hint: ")
         if entered_letter == '?':
-            hangman.use_hint()
+            hint_check = hangman.use_hint()
+            if hint_check == "hints_unavailable":
+                print("Hints not avialable at this difficulty")
 
         else:
-            hangman.guess(entered_letter)
+            status: str = hangman.guess(entered_letter)
 
-    rendered_gallow = hangman.render_gallows()
-    print(rendered_gallow)
-    print(word_selected)
+            if status == "invalid_length":
+                print("Please enter exactly one letter!")
+            elif status == "invalid_letter":
+                print("Must be a lowercase letter!")
+            elif status == "already_guessed":
+                print("You already guessed that letter!")
+            elif status == "invalid_guess":
+                pass
+
+    display_board(  hangman.render_gallows(),
+                    hangman.render_word(),
+                    hangman.attempt_remain,
+                    hangman.letter_guessed  )
 
     return bool(hangman.is_won())
 
@@ -86,6 +100,7 @@ else:
             else:
                 print("Invalid input!")
                 continue
+
     except KeyboardInterrupt:
         save_stats(stats["wins"], stats["losses"])
         print("\nThanks for playing! Goodbye.")

@@ -1,6 +1,6 @@
 import random
 
-from ui import gallows
+from ui import gallow_stages
 
 
 class Hangman:
@@ -57,4 +57,4 @@ class Hangman:
     def render_gallows(self):
         mistakes_made = self.max_attempt - self.attempt_remain
         index = int(mistakes_made / self.max_attempt * 10)
-        return gallows[index]
+        return gallow_stages[index]
