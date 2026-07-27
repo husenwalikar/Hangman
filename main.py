@@ -14,10 +14,14 @@ parser = argparse.ArgumentParser(description="Hangman Quick Round")
 parser.add_argument("-c", "--category", help="Selecting a category")
 parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the difficulty")
 args = parser.parse_args()
+if args.category:
+    args.category = args.category.lower()
+if args.difficulty:
+    args.difficulty = args.difficulty.lower()
 
 def select_category():
     while True:   
-        category = console.input(f"\n[prompt]❯[/] [label]Select category[/] [muted](<{', '.join(categories.keys())}>)[/]: ").strip()
+        category = console.input(f"\n[prompt]❯[/] [label]Select category[/] [muted](<{', '.join(categories.keys())}>)[/]: ").strip().lower()
         if category in categories:
             return category
         
@@ -25,7 +29,7 @@ def select_category():
 
 def select_level():
     while True:
-        level = console.input("\n[prompt]❯[/] [label]Select difficulty[/] [muted](<easy / medium / hard>)[/]: ").strip()
+        level = console.input("\n[prompt]❯[/] [label]Select difficulty[/] [muted](<easy / medium / hard>)[/]: ").strip().lower()
         if level in DIFFICULTY_LEVELS:
             return DIFFICULTY_LEVELS[level]
         console.print("\n⚠  Invalid difficulty! Choose your fate carefully.", style="warning")
@@ -69,13 +73,13 @@ def play_round(category: str, level: int):
     console.clear()
     message = ""
 
-    if hangman.is_lost():
-        revealed_word = hangman.target_word
-        message = "[danger]Your time has run out... You HANG ☠[/]"
-
-    else:
+    if hangman.is_won():
         revealed_word = hangman.render_word()
         message = "[success]You cheated death... this time.[/]"
+
+    else:
+        revealed_word = hangman.target_word
+        message = "[danger]Your time has run out. [danger]You hang ☠[/]"
 
     display_board(  hangman.render_gallows(),
                     revealed_word,
@@ -98,8 +102,10 @@ def update_results(round_result, stats: dict):
 
 stats = load_stats()
 try:
-    if args.category and args.difficulty:
-        if args.category not in categories:
+    if args.category or args.difficulty:
+        if not args.category or not args.difficulty:
+            console.print("\n⚠  You must provide BOTH --category and --difficulty for CLI mode.", style="warning")
+        elif args.category not in categories:
             console.print(f"\n⚠  Unknown category: '{args.category}'", style="warning")
             console.print(f"[muted]Available: {', '.join(categories.keys())}[/]")
         else:
@@ -111,7 +117,7 @@ try:
     else:
         display_welcome()
         while True:
-            user_input = console.input("\n[prompt]❯[/] [label]MAIN MENU[/] [muted](<play / results / exit>)[/]: ").strip()
+            user_input = console.input("\n[prompt]❯[/] [label]MAIN MENU[/] [muted](<play / results / exit>)[/]: ").strip().lower()
             if user_input == "play":
                 category = select_category()
                 level = select_level()

@@ -278,7 +278,7 @@ def display_board(  hangman_art: str,
     dashboard.add_row(left_panel, right_panel)
 
     if message:
-       alert = Align.center(Panel(f"[danger] ⚠  {message}[/]", border_style="danger", expand=False))
+       alert = Align.center(Panel(f"[danger] ⚠  {message}[/]", border_style="gallows", expand=False))
        final_layout = Group(dashboard, alert)
     else:
        final_layout = dashboard
@@ -301,6 +301,6 @@ def display_welcome():
   · Type [gallows]?[/] for a hint (costs 1 life).
   · Hints are [danger]disabled[/] on hard mode.
 """
-    welcome_panel = Panel(Align.center(banner), style="on #15131B", border_style="secondary")
+    welcome_panel = Panel(Align.center(banner),title="Terminal Edition", style="on #15131B", border_style="secondary")
     console.print(welcome_panel)
     console.print()
