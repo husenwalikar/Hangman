@@ -1,6 +1,6 @@
-<h1 align="center">
+<h2 align="center">
   ☠️ Hangman: Terminal Edition
-</h1>
+</h2>
 
 <p align="center">
   <b>A modern, vibrant, and over-engineered CLI take on the classic game of Hangman.</b><br>
@@ -19,16 +19,16 @@
 
 <hr>
 
-## 📖 Table of Contents
-- [Motivation](#-motivation)
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Installation](#-installation)
-- [Usage](#-usage)
+### 📖 Table of Contents
+1. [Motivation](#motivation)
+2. [Features](#features)
+3. [Architecture](#architecture)
+4. [Installation](#installation)
+5. [Usage](#usage)
 
 ---
 
-## 🧠 Motivation
+### Motivation
 
 I built this project to revise and solidify my core Python skills. Instead of just printing text to the console, I wanted to take a universally understood logic puzzle (Hangman) and use it as a sandbox to practice writing **production-grade, professional Python code**. 
 
@@ -41,7 +41,7 @@ By completely over-engineering a simple game, I leveled up in several core conce
 
 ---
 
-## ✨ Features
+### Features
 
 - **Vibrant Dashboard UI:** A shrink-wrapped, centered UI built with `rich` that feels like a cohesive app, not a script.
 - **Smart Input Validation:** Fool-proof input handling. Type whatever you want; the game won't crash.
@@ -51,7 +51,7 @@ By completely over-engineering a simple game, I leveled up in several core conce
 
 ---
 
-## 🏗️ Architecture
+### Architecture
 
 The codebase is strictly separated by concerns, making it highly modular and easy to read:
 
@@ -66,7 +66,7 @@ Hangman
 
 ---
 
-## 🚀 Installation
+### Installation
 
 Ensure you have **Python 3.10+** installed on your machine.
 
@@ -83,15 +83,15 @@ Ensure you have **Python 3.10+** installed on your machine.
 
 ---
 
-## 🎮 Usage
+### Usage
 
-### Option 1: Interactive Menu
+#### Option 1: Interactive Menu
 Run the main script and let the beautiful on-screen menu guide you.
 ```bash
 python main.py
 ```
 
-### Option 2: CLI Fast-Track
+#### Option 2: CLI Fast-Track
 Know exactly what you want to play? Pass your arguments directly to bypass the menu:
 ```bash
 # Example: Play the 'movies' category on 'hard' difficulty
