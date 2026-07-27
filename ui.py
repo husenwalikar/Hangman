@@ -1,39 +1,36 @@
+from rich import box
 from rich.align import Align
-from rich.columns import Columns
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
 from rich.theme import Theme
 
 game_theme = Theme({
-    # ── Structure ──────────────────────────────
-    "primary":      "bold #c084fc",   # Purple  — master panel border, titles
-    "secondary":    "#a78bfa",        # Violet  — sub-panel borders
+    "primary":      "bold #4ade80",
+    "secondary":    "bold #c084fc",
 
-    # ── Game Board ─────────────────────────────
-    "gallows":      "#facc15",        # Amber   — ASCII art
-    "word":         "bold #67e8f9",   # Cyan    — hidden word letters
-    "muted":        "bold #bd92eb",        # Grey    — guessed letters list
-    "separator":    "#374151",        # Dark    — ─── divider lines
+    "gallows":      "bold #facc15",
+    "word":         "bold #67e8f9",
+    "muted":        "bold #bd92eb",
+    "separator":    "#374151",
 
-    # ── Lives ─────────────────────────────────
-    "lives.ok":     "bold #4ade80",   # Green   — more than 6 lives
-    "lives.mid":    "bold #fb923c",   # Orange  — 4 to 6 lives
-    "lives.low":    "bold #f87171",   # Red     — 3 or fewer lives
+    "lives.ok":     "bold #4ade80",   
+    "lives.mid":    "bold #fb923c",
+    "lives.low":    "bold #f87171",
 
-    # ── Feedback ───────────────────────────────
-    "success":      "bold #4ade80",   # Green   — You Won!
-    "danger":       "bold #f87171",   # Red     — You Lost / alert box
-    "warning":      "bold #fb923c",   # Orange  — soft warnings (invalid input)
-    "info":         "#67e8f9",        # Cyan    — hint messages
+    "success":      "bold #4ade80",
+    "danger":       "bold #f87171",
+    "warning":      "bold #fb923c",
+    "info":         "#67e8f9",
 
-    # ── Menu / Prompts ─────────────────────────
-    "prompt":       "bold #c084fc",   # Purple  — input prompt arrows
-    "label":        "bold #e5e7eb",   # White   — "Category:", "Difficulty:" labels
-    "value":        "italic #a78bfa", # Violet  — the actual values next to labels
+    "prompt":       "bold #c084fc",
+    "label":        "bold #e5e7eb", 
+    "value":        "italic #a78bfa",
 })
 
-console = Console(theme=game_theme)
+console = Console(theme=game_theme, color_system="truecolor")
+DIFFICULTIES = {10: "easy", 8: "medium", 5: "hard"}
+
 gallow_stages: list[str] = [
     # Stage 0: Empty Gallows (0 mistakes)
     r"""   +-----------+            
@@ -245,7 +242,7 @@ def display_board(  hangman_art: str,
                   ):
     
     styled_hangman = f"[gallows]{hangman_art}[/]"
-    left_panel = Panel(Align.center(styled_hangman, vertical="middle"), style="secondary", title="Gallows")
+    left_panel = Panel(Align.center(styled_hangman, vertical="middle"), border_style="secondary", title="Gallows")
 
     if attempts > 6:
       life_color = "lives.ok"
@@ -253,20 +250,14 @@ def display_board(  hangman_art: str,
       life_color = "lives.mid"
     else:
       life_color = "lives.low"
-    
-    difficulties = {
-                10: "easy",
-                8: "medium",
-                5: "hard"
-            }
-    
+        
     styled_word = f"[word]{' '.join(current_word)}[/]"
     hearts = f"[danger]{'♥ ' * attempts}[/][dim]{'♡ ' * (max_attempts - attempts)}[/dim]"
     styled_attempts = f"[{life_color}]Lives: {attempts}/{max_attempts}[/]  {hearts}"
-    styled_guesses = f"[success]Guessed: {', '.join(guessed_letters)}[/]"
+    styled_guesses = f"[success]Guessed: {', '.join(sorted(guessed_letters))}[/]"
     separator = f"[separator]{'─' * 30}[/]"
     styled_category = f"[label]Category  :[/]  [value]{category}[/]"
-    styled_difficulty = f"[label]Difficulty:[/]  [value]{difficulties[difficulty]}[/]"
+    styled_difficulty = f"[label]Difficulty:[/]  [value]{DIFFICULTIES[difficulty]}[/]"
     right_stack = Group(
         styled_category,
         styled_difficulty,
@@ -281,7 +272,7 @@ def display_board(  hangman_art: str,
         "",
         styled_guesses
     )
-    right_panel = Panel(Align.center(right_stack, vertical="middle"),style="secondary", title="Status", padding=(2, 4), width=45)
+    right_panel = Panel(Align.center(right_stack, vertical="middle"), border_style="secondary", title="Status", padding=(2, 4), width=45)
 
     dashboard = Table.grid(padding=(0, 2))
     dashboard.add_row(left_panel, right_panel)
@@ -291,7 +282,7 @@ def display_board(  hangman_art: str,
        final_layout = Group(dashboard, alert)
     else:
        final_layout = dashboard
-    master_panel = Panel(final_layout, title="[primary]☠  HANGMAN ☠[/]  ", border_style="primary", expand=False)
+    master_panel = Panel(final_layout, title="[primary]☠  H A N G M A N ☠[/]  ", style="on #15131B", border_style="primary", box=box.DOUBLE, expand=False)
     console.print(Align.center(master_panel))
 
 def display_welcome():
@@ -305,11 +296,11 @@ def display_welcome():
                       |___/    
 [/]
 [info]How to play!:[/]
-  · Guess the WORD from chossen category (one letter at time).
-  · Type easy / medium / hard for difficulty level. 
-  · Type [label]?[/] (costs 1 life)
+  · Guess the WORD from chosen category (one letter at time).
+  · Type [success]easy[/] / [warning]medium[/] / [danger]hard[/] for difficulty level. 
+  · Type [gallows]?[/] for a hint (costs 1 life).
   · Hints are [danger]disabled[/] on hard mode.
 """
-    welcome_panel = Panel(Align.center(banner), border_style="bold magenta")
+    welcome_panel = Panel(Align.center(banner), style="on #15131B", border_style="secondary")
     console.print(welcome_panel)
     console.print()

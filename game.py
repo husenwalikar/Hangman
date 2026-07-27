@@ -6,12 +6,13 @@ from ui import gallow_stages
 class Hangman:
     def __init__(self, target_word: str, max_attempt: int):
         self.target_word = target_word
+        self.target_letters = set(target_word)
         self.letter_guessed: set[str] = set()
         self.max_attempt = max_attempt
         self.attempt_remain = max_attempt
 
     def guess(self, letter: str):
-        # Graud Clauses
+        # Guard Clauses
         if len(letter) != 1:
             return "invalid_length"
 
@@ -27,7 +28,6 @@ class Hangman:
             return "invalid_guess"
 
     def render_word(self):
-        # rendered_word: str = "".join([i if i in self.letter_guessed else "_" for i in self.target_word])
         rendered_word: str = ""
         for i in self.target_word:
             if i in self.letter_guessed:
@@ -38,8 +38,7 @@ class Hangman:
 
 
     def is_won(self) -> bool:
-        target_word_set = set(self.target_word)
-        return target_word_set.issubset(self.letter_guessed)
+        return self.target_letters.issubset(self.letter_guessed)
 
 
     def is_lost(self) -> bool:
@@ -49,11 +48,10 @@ class Hangman:
         if self.max_attempt == 5:
             return "hints_unavailable"
         else:
-            self.attempt_remain -= 1
-            target_word_set = set(self.target_word)
-            remaining: set[str] = target_word_set.difference(self.letter_guessed)
+            remaining: set[str] = self.target_letters.difference(self.letter_guessed)
             if not remaining:
                 return "no_letters_left"
+            self.attempt_remain -= 1
             hint_letter: str = random.choice(list(remaining))
             self.letter_guessed.add(hint_letter)
 

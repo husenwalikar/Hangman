@@ -1,18 +1,23 @@
 import argparse
 
+from rich.align import Align
+from rich.panel import Panel
+
 from game import Hangman
 from stats import load_stats, save_stats
 from ui import console, display_board, display_welcome
 from words import categories, select_word
 
+DIFFICULTY_LEVELS = {"easy": 10, "medium": 8, "hard": 5}
+
 parser = argparse.ArgumentParser(description="Hangman Quick Round")
 parser.add_argument("-c", "--category", help="Selecting a category")
-parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the diificulty")
+parser.add_argument("-d", "--difficulty", choices=["easy", "medium", "hard"], help="Selecting the difficulty")
 args = parser.parse_args()
 
 def select_category():
     while True:   
-        category = console.input(f"\n[prompt]❯[/] [label]Select category[/] [muted](<{', '.join(categories.keys())}>)[/]: ")
+        category = console.input(f"\n[prompt]❯[/] [label]Select category[/] [muted](<{', '.join(categories.keys())}>)[/]: ").strip()
         if category in categories:
             return category
         
@@ -20,14 +25,9 @@ def select_category():
 
 def select_level():
     while True:
-        level = console.input("\n[prompt]❯[/] [label]Select difficulty[/] [muted](<easy / medium / hard>)[/]: ")
-        levels = {
-            "easy": 10,
-            "medium": 8,
-            "hard": 5
-        }
-        if level in levels:
-            return levels[level]
+        level = console.input("\n[prompt]❯[/] [label]Select difficulty[/] [muted](<easy / medium / hard>)[/]: ").strip()
+        if level in DIFFICULTY_LEVELS:
+            return DIFFICULTY_LEVELS[level]
         console.print("\n⚠  Invalid difficulty! Choose your fate carefully.", style="warning")
 
 def play_round(category: str, level: int):
@@ -46,7 +46,7 @@ def play_round(category: str, level: int):
                         message
                     )
         message = ""
-        entered_letter = console.input("\n[prompt]❯[/] [label]Enter a letter[/] [muted](<or '?' for a hint>)[/]: ")
+        entered_letter = console.input("\n[prompt]❯[/] [label]Enter a letter[/] [muted](<or '?' for a hint>)[/]: ").strip().lower()
         if entered_letter == '?':
             hint_check = hangman.use_hint()
             if hint_check == "hints_unavailable":
@@ -67,6 +67,10 @@ def play_round(category: str, level: int):
                 message = "Incorrect guess!"
  
     console.clear()
+
+    if hangman.is_lost():
+        hangman.letter_guessed = set(hangman.target_word)
+
     display_board(  hangman.render_gallows(),
                     hangman.render_word(),
                     hangman.attempt_remain,
@@ -77,29 +81,33 @@ def play_round(category: str, level: int):
                     message                    
                 )
 
-    return bool(hangman.is_won())
+    return hangman.is_won()
 
-stats = load_stats()
 def update_results(round_result, stats: dict):
     if round_result:
         stats["wins"] += 1
         console.print("\n[success]You cheated death... this time.[/]")
     else:
         stats["losses"] += 1
-        console.print("\n[bold yellow]Your time has run out.[/] [danger]You hang  ☠[/]")
+        console.print("\n[bold yellow]Your time has run out.[/] [danger]You hang ☠[/]")
     save_stats(stats["wins"], stats["losses"])
+
+stats = load_stats()
 try:
     if args.category and args.difficulty:
-        difficulty_dict = {"easy": 10, "medium": 8, "hard": 5}
-        level = difficulty_dict[args.difficulty]
-        category = args.category
-        round_result = play_round(category, level)
-        update_results(round_result, stats)
+        if args.category not in categories:
+            console.print(f"\n⚠  Unknown category: '{args.category}'", style="warning")
+            console.print(f"[muted]Available: {', '.join(categories.keys())}[/]")
+        else:
+            level = DIFFICULTY_LEVELS[args.difficulty]
+            category = args.category
+            round_result = play_round(category, level)
+            update_results(round_result, stats)
 
     else:
         display_welcome()
         while True:
-            user_input = console.input("\n[prompt]❯[/] [label]MAIN MENU[/] [muted](<play / results / exit>)[/]: ")
+            user_input = console.input("\n[prompt]❯[/] [label]MAIN MENU[/] [muted](<play / results / exit>)[/]: ").strip()
             if user_input == "play":
                 category = select_category()
                 level = select_level()
@@ -107,7 +115,9 @@ try:
                 update_results(round_result,stats)
 
             elif user_input == "results":
-                console.print(f"\n[label]SCOREBOARD[/]  [success]Wins: {stats['wins']}[/]  |  [danger]Losses: {stats['losses']}[/]\n")
+                stats_info = f"[success]Wins: {stats['wins']}[/]  |  [danger]Losses: {stats['losses']}[/]"
+                stats_panel = Panel(stats_info, title="[label]Scoreboard[/]", style="on #15131B", border_style="secondary", expand=False)
+                console.print(Align.center(stats_panel))
 
             elif user_input == "exit":
                 save_stats(stats["wins"], stats["losses"])
