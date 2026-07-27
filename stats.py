@@ -12,7 +12,7 @@ def load_stats() -> dict:
         with open("stats.json", "r") as file:
             stats = json.load(file)
 
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
         with open("stats.json", "w") as file:
             stats = {"wins": 0, "losses": 0}
             json.dump(stats, file)

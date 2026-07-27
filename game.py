@@ -51,7 +51,10 @@ class Hangman:
         else:
             self.attempt_remain -= 1
             target_word_set = set(self.target_word)
-            hint_letter: str = random.choice(list(target_word_set.difference(self.letter_guessed)))
+            remaining: set[str] = target_word_set.difference(self.letter_guessed)
+            if not remaining:
+                return "no_letters_left"
+            hint_letter: str = random.choice(list(remaining))
             self.letter_guessed.add(hint_letter)
 
     def render_gallows(self):
