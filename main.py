@@ -67,12 +67,18 @@ def play_round(category: str, level: int):
                 message = "Incorrect guess!"
  
     console.clear()
+    message = ""
 
     if hangman.is_lost():
-        hangman.letter_guessed = set(hangman.target_word)
+        revealed_word = hangman.target_word
+        message = "[danger]Your time has run out... You HANG ☠[/]"
+
+    else:
+        revealed_word = hangman.render_word()
+        message = "[success]You cheated death... this time.[/]"
 
     display_board(  hangman.render_gallows(),
-                    hangman.render_word(),
+                    revealed_word,
                     hangman.attempt_remain,
                     hangman.letter_guessed,
                     hangman.max_attempt,
@@ -86,10 +92,8 @@ def play_round(category: str, level: int):
 def update_results(round_result, stats: dict):
     if round_result:
         stats["wins"] += 1
-        console.print("\n[success]You cheated death... this time.[/]")
     else:
         stats["losses"] += 1
-        console.print("\n[bold yellow]Your time has run out.[/] [danger]You hang ☠[/]")
     save_stats(stats["wins"], stats["losses"])
 
 stats = load_stats()

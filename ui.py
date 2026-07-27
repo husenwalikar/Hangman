@@ -278,7 +278,7 @@ def display_board(  hangman_art: str,
     dashboard.add_row(left_panel, right_panel)
 
     if message:
-       alert = Panel(f"[danger] ⚠  {message}[/]", border_style="danger", expand=False)
+       alert = Align.center(Panel(f"[danger] ⚠  {message}[/]", border_style="danger", expand=False))
        final_layout = Group(dashboard, alert)
     else:
        final_layout = dashboard
