@@ -91,7 +91,7 @@ Run the main script and let the beautiful on-screen menu guide you.
 python main.py
 ```
 
-#### Option 2: CLI Fast-Track
+#### Option 2: CLI Arguments Fast-Track
 Know exactly what you want to play? Pass your arguments directly to bypass the menu:
 ```bash
 # Example: Play the 'movies' category on 'hard' difficulty
