@@ -1,102 +1,93 @@
-<h2 align="center">
-  ☠️ Hangman: Terminal Edition
-</h2>
+<h1 align="center">☠️ Hangman: Terminal Edition</h1>
 
-<p align="center">
-  <b>A modern, vibrant, and over-engineered CLI take on the classic game of Hangman.</b><br>
-  Built with Python, Rich, and a lot of dead ASCII stickmen.
-</p>
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python Version">
-  <img src="https://img.shields.io/badge/Architecture-MVC-success.svg" alt="Architecture">
-  <img src="https://img.shields.io/badge/UI-Rich-9cf.svg" alt="UI Library">
-</p>
+**A polished terminal implementation of the classic Hangman game built with Python and Rich.**
 
-<p align="center">
-  <img src="assests/AnimationFinal2.gif" alt="Hangman Terminal Edition Demo" width="750">
-</p>
+Modern terminal UI • Persistent statistics • Clean MVC architecture
 
-<hr>
+<br>
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![Architecture](https://img.shields.io/badge/Architecture-MVC-success)
+![Rich](https://img.shields.io/badge/UI-Rich-9cf)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+<br>
+
+<img src="assests/AnimationFinal2.gif" alt="Hangman Terminal Edition Demo" width="850">
+
+</div>
 
 ### 📖 Table of Contents
-1. [Motivation](#motivation)
-2. [Features](#features)
-3. [Architecture](#architecture)
-4. [Installation](#installation)
-5. [Usage](#usage)
+
+1. [Features](#features)
+2. [Architecture](#architecture)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Project Structure](#project-structure)
+6. [License](#license)
+7. [Why I Built This](#why-i-built-this)
 
 ---
 
-### Motivation
+### ✨ Features
 
-I built this project to revise and solidify my core Python skills. Instead of just printing text to the console, I wanted to take a universally understood logic puzzle (Hangman) and use it as a sandbox to practice writing **production-grade, professional Python code**. 
-
-By completely over-engineering a simple game, I leveled up in several core concepts:
-- **Object-Oriented Programming (OOP):** Encapsulating state cleanly inside a `Hangman` class instead of relying on messy global variables.
-- **Software Design Patterns:** Implementing a strict **MVC (Model-View-Controller)** architecture.
-- **Advanced CLI UIs:** Learning the `rich` library to build responsive `Table.grid` layouts and handle truecolor terminal output.
-- **Data Persistence:** Using `json` and file I/O to safely manage a local scoreboard across sessions without corrupting data.
-- **Robust Error Handling:** Writing airtight guard clauses for user input and gracefully handling `KeyboardInterrupt` exits.
-
----
-
-### Features
-
-- **Vibrant Dashboard UI:** A shrink-wrapped, centered UI built with `rich` that feels like a cohesive app, not a script.
-- **Smart Input Validation:** Fool-proof input handling. Type whatever you want; the game won't crash.
-- **Difficulty Scaling:** Easy, Medium, and Hard modes (Hard mode disables hints!).
-- **Persistent Scoreboard:** Your wins and losses are tracked locally so you can prove your streak.
-- **Dual Execution:** Play via the styled interactive menu, or bypass it entirely using fast-track CLI arguments.
+- **Live dashboard** — redraws after every guess; gallows panel and status panel side by side
+- **Lives that change color** as you get closer to losing — green, orange, then red, so the danger is visible at a glance
+- **5 categories** — movies, food, space, cities, superheroes
+- **Three difficulty tiers** — Easy (10 lives), Medium (8), Hard (5, hints disabled)
+- **Hints** cost one life, and they're turned off entirely on hard mode
+- **Gracefully handles invalid input** — type garbage into the prompt and it just tells you what you did wrong
+- **Stats that persist between sessions**, even if the file gets deleted or corrupted — it just rebuilds itself
+- **Graceful Ctrl+C handling** — no traceback, just a goodbye message and your win/loss record written on the way out
 
 ---
 
-### Architecture
+### 🏗️ Architecture
 
-The codebase is strictly separated by concerns, making it highly modular and easy to read:
+`game.py` has no idea `rich` exists, and `ui.py` never changes game state — it only reads it. That split made it a lot easier to test the game logic on its own.
 
-```text
-Hangman
- ┣ main.py   (Controller: Orchestrates the game loop, input, and CLI args)
- ┣ game.py   (Model: Handles core Hangman logic, sets, and state)
- ┣ ui.py     (View: Strictly handles rendering the rich components and layouts)
- ┣ stats.py  (Storage: Manages reading/writing the persistent JSON scoreboard)
- ┗ words.py  (Data: The repository for categories and hidden words)
+| File | Role | Responsibility |
+|---|---|---|
+| `main.py` | Controller | CLI args, menu, game loop — wires everything together |
+| `game.py` | Model | The `Hangman` class — word, guesses, attempts remaining |
+| `ui.py` | View | The `rich` theme, gallows art, panel rendering |
+| `stats.py` | Storage | Reads/writes `stats.json`, rebuilds it if missing or broken |
+| `words.py` | Data | Category → word-list mapping, random word selection |
+
+---
+
+### 🚀 Installation
+
+Requires **Python 3.10+**.
+
+```bash
+git clone https://github.com/husenwalikar/hangman-cli.git
+cd hangman-cli
+pip install -r requirements.txt
 ```
 
----
-
-### Installation
-
-Ensure you have **Python 3.10+** installed on your machine.
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/husenwalikar/hangman-cli.git
-   cd hangman-cli
-   ```
-
-2. Install the required dependencies:
-   ```bash
-   pip install rich
-   ```
+The only runtime dependency is `rich`.
 
 ---
 
-### Usage
+### 🎮 Usage
 
 #### Option 1: Interactive Menu
-Run the main script and let the beautiful on-screen menu guide you.
 ```bash
 python main.py
 ```
+You'll land on a menu with three commands: `play`, `results`, `exit`.
 
-#### Option 2: CLI Arguments Fast-Track
-Know exactly what you want to play? Pass your arguments directly to bypass the menu:
+#### Option 2: CLI Fast-Track
 ```bash
 # Example: Play the 'movies' category on 'hard' difficulty
-python main.py -c movies -d hard
+python main.py --category movies --difficulty hard
 ```
+Categories: `movies`, `food`, `space`, `cities`, `superheroes`
+Difficulties: `easy`, `medium`, `hard`
+*(Both flags are required together — passing only one gets you a warning.)*
 
 <details>
 <summary><b>View all CLI options</b></summary>
@@ -118,4 +109,46 @@ options:
 </details>
 
 ---
-<p align="center"><i>Created by Husen</i></p>
+
+### 🗂️ Project Structure
+
+```text
+Hangman/
+ ┣ assets/
+ ┃ ┗ AnimationFinal2.gif
+ ┣ .gitignore
+ ┣ CHANGELOG.md
+ ┣ LICENSE
+ ┣ README.md
+ ┣ game.py
+ ┣ main.py
+ ┣ requirements.txt
+ ┣ stats.py
+ ┣ ui.py
+ ┣ words.py
+ ┗ stats.json (generated automatically)
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
+
+> `stats.json` is generated automatically the first time the game runs. Since it stores local statistics, it is already ignored by `.gitignore`.
+---
+
+### 📜 License
+
+MIT — see [LICENSE](LICENSE) for details.
+
+---
+
+### 💭 Why I Built This
+
+I kept starting side projects, scoping them way too big, and abandoning them halfway through. So this time I picked something small and dumb on purpose — Hangman — and made myself build it like it actually mattered: a real `Hangman` class instead of a pile of loose variables, a proper MVC split, and a `rich`-powered dashboard, a library I'd never touched before this.
+
+The live dashboard, MVC architecture, and self-healing statistics weren't necessary for a simple Hangman game. I built them anyway because I wanted to practice writing software that was maintainable, not just functional.
+
+---
+
+<p align="center">
+  <i>Created by Husen</i><br>
+  <a href="https://github.com/husenwalikar">GitHub</a> · <a href="https://www.linkedin.com/in/husensab-walikar-870aab373/">LinkedIn</a>
+</p>
